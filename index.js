@@ -14,7 +14,7 @@ const getAccessToken = () => {
       };
     //const url = $site + 'access/impresonate 
       
-      fetch("https://services7.integrify.com/access/impersonate?key=services_api&user=ebonertz", requestOptions)
+      fetch(url, requestOptions)
         .then(response => response.text())
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
@@ -29,7 +29,7 @@ const getExistingingUsers = (token) => {
     var requestOptions = {
       method: 'GET',
       headers: {
-        'Authorization': 'Bearer 753b012674ad4b6bb49e5c7d4019d8d0'
+        'Authorization': 'Bearer {{token}}'
       },
       redirect: 'follow'
     };
@@ -54,9 +54,10 @@ const convertCSV = () => {
 convertCSV()
 
 const compareJSON = () => {
+    //takes usersimport json from csv and existinguser json and runs a comparison by username
     //map each entry by user name
-    //add new users to one array
-    //add existing users to another array
+    //add new users to one array (user name does not already exists)
+    //add existing users to another array (username exists already)
 }
 
 const addNewUsers = () => {
