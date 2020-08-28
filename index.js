@@ -1,25 +1,23 @@
-// This is a sudo code mock up of what my function is going to do
-
-// Import dependencies
-// import AWS
-// import Node Libraries
+const integrifyLambda = require('integrify-aws-lambda');
 const fetch = require('node-fetch');
 const csv = require('csvtojson');
 const parser = require('csv-parser');
 
+//Obtain Access Token with Impresonate
 const getAccessToken = () => {
     const requestOptions = {
         method: 'GET',
         redirect: 'follow'
       };
-    //const url = $site + 'access/impresonate 
+    const site = 'https://services7.integrify.com'
+    const url = site + '/access/impersonate?key=services_api&user=ebonertz'
       
       fetch(url, requestOptions)
         .then(response => response.text())
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
 }
-// getAccessToken();
+getAccessToken();
 
 
 const getExistingingUsers = (token) => {
@@ -40,7 +38,7 @@ const getExistingingUsers = (token) => {
       .catch(error => console.log('error', error));
 }
 
-// getExistingingUsers()
+getExistingingUsers()
 
 const convertCSV = () => {
     // use npm package to convert csv import file to a JSON format
@@ -53,12 +51,7 @@ const convertCSV = () => {
 
 convertCSV()
 
-const compareJSON = () => {
-    //takes usersimport json from csv and existinguser json and runs a comparison by username
-    //map each entry by user name
-    //add new users to one array (user name does not already exists)
-    //add existing users to another array (username exists already)
-}
+
 
 const addNewUsers = () => {
     // for loop to create new users for all usernames in the new users array
@@ -73,4 +66,11 @@ fetch('https://httpbin.org/post', {
     })
     .then(res => res.json())
     .then(json => console.log(json));
+}
+
+const compareJSON = () => {
+  //takes usersimport json from csv and existinguser json and runs a comparison by username
+  //map each entry by user name
+  //add new users to one array (user name does not already exists)
+  //add existing users to another array (username exists already)
 }
