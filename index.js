@@ -13,15 +13,15 @@ var buffStream = require("vinyl-source-buffer")
 console.log(creds)
 
 //create a new Integrfiy AWS Lambda object passing in a configuration object with inputs, outputs and your execute function
-var config = {
-  helpUrl: "http://www.integrify.com",
-  inputs: [
-      {key:"requestSid", type:"string"},
-      {key:"file", type:"file"},
-      {key:"username", type:"string"},
-      {key:"password", type:"string"},
-  outputs:[{key:"successMessage", type:"string"}]
-}
+// var config = {
+//   helpUrl: "http://www.integrify.com",
+//   inputs: [
+//       {key:"requestSid", type:"string"},
+//       {key:"file", type:"file"},
+//       {key:"username", type:"string"},
+//       {key:"password", type:"string"},
+//   outputs:[{key:"successMessage", type:"string"}]
+// }
 
 
 //Obtain Access Token with Impresonate
@@ -44,18 +44,18 @@ const getAccessToken = () => {
 
 getAccessToken()
 
-const token = "858df16f61c643bc96443716e14dd844"
+const token = " "
 
-//Get CSV File from API by the Request GUID
-// Must pass in Instance SID from request to the lambda 
-// Change header to use the token form the previous request
 
-const getFile = (token) => {
+ //get a list of files from integrify for the request using the REST API
+    //files/instancelist/:instance_sid
+
+const getFiles = (token) => {
   
   var requestOptions = {
     method: 'GET',
     headers: {
-      'Authorization': 'Bearer 9daa495ba65f4d358ec1fcf7d503d8bd'
+      'Authorization': 'Bearer <token>'
     },
     redirect: 'follow'
   };
@@ -67,8 +67,13 @@ const getFile = (token) => {
     .catch(error => console.log('error', error));
 } 
 
-getFile();
+getFiles();
 
+//Parse the Stream Endpoint out of the response
+// const integrifyFile = results
+// const intefridyFileUrl = integrifyFile.StreamEndpoint;
+
+//Take file from Stream Endpoint and Convert to JSON and maps to fit JSON body format
 
 const convertCSV = () => {
     // use npm package to convert csv import file to a JSON format
@@ -78,7 +83,10 @@ const convertCSV = () => {
         console.log(json);
     })
 }
+
 // convertCSV()
+//Returns JSON format and assigns to a body variable 
+// Array of User Objects 
 
 const addNewUsers = () => {
     // for loop to create new users for all usernames in the new users array
