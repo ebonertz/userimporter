@@ -3,8 +3,26 @@ const fetch = require('node-fetch');
 const csv = require('csvtojson');
 const parser = require('csv-parser');
 const testUser = require('./test.js');
-const config = require('./config.js');
-console.log(config)
+const creds = require('./config.js');
+var fs = require('fs');
+var path = require('path');
+var map = require('map-stream')
+var vfs = require('vinyl-fs');
+var buffStream = require("vinyl-source-buffer")
+
+console.log(creds)
+
+//create a new Integrfiy AWS Lambda object passing in a configuration object with inputs, outputs and your execute function
+var config = {
+  helpUrl: "http://www.integrify.com",
+  inputs: [
+      {key:"requestSid", type:"string"},
+      {key:"file", type:"file"},
+      {key:"username", type:"string"},
+      {key:"password", type:"string"},
+  outputs:[{key:"successMessage", type:"string"}]
+}
+
 
 //Obtain Access Token with Impresonate
 const getAccessToken = () => {
@@ -13,7 +31,7 @@ const getAccessToken = () => {
         redirect: 'follow'
       };
     // const site = 'https://services7.integrify.com'
-    const url = `${config.site}/access/impersonate?key=${config.key}&user=${config.user}`
+    const url = `${creds.site}/access/impersonate?key=${creds.key}&user=${creds.user}`
 
     console.log(`Request url:${url}`);
 
@@ -29,8 +47,10 @@ getAccessToken()
 const token = "858df16f61c643bc96443716e14dd844"
 
 //Get CSV File from API by the Request GUID
+// Must pass in Instance SID from request to the lambda 
+// Change header to use the token form the previous request
 
-const getCSV = (token) => {
+const getFile = (token) => {
   
   var requestOptions = {
     method: 'GET',
@@ -47,7 +67,7 @@ const getCSV = (token) => {
     .catch(error => console.log('error', error));
 } 
 
-getCSV();
+getFile();
 
 
 const convertCSV = () => {
