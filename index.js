@@ -3,8 +3,27 @@ const fetch = require('node-fetch');
 const csv = require('csvtojson');
 const parser = require('csv-parser');
 const testUser = require('./test.js');
-const config = require('./config.js');
-console.log(config)
+const creds = require('./config.js');
+var fs = require('fs');
+var path = require('path');
+var map = require('map-stream')
+var vfs = require('vinyl-fs');
+var buffStream = require("vinyl-source-buffer")
+
+console.log(creds)
+
+//create a new Integrfiy AWS Lambda object passing in a configuration object with inputs, outputs and your execute function
+var config = {
+  helpUrl: "http://www.integrify.com",
+  inputs: [
+      {key:"requestSid", type:"string"},
+      {key:"file", type:"file"},
+      {key:"username", type:"string"},
+      {key:"email", type:"string"},
+      {key:"password", type:"string"}],
+  outputs:[{key:"successMessage", type:"string"}]
+}
+
 
 //Obtain Access Token with Impresonate
 const getAccessToken = () => {
@@ -13,7 +32,7 @@ const getAccessToken = () => {
         redirect: 'follow'
       };
     // const site = 'https://services7.integrify.com'
-    const url = `${config.site}/access/impersonate?key=${config.key}&user=${config.user}`
+    const url = `${creds.site}/access/impersonate?key=${creds.key}&user=${creds.user}`
 
     console.log(`Request url:${url}`);
 
@@ -26,16 +45,18 @@ const getAccessToken = () => {
 
 getAccessToken()
 
-const token = "858df16f61c643bc96443716e14dd844"
+const token = " "
 
-//Get CSV File from API by the Request GUID
 
-const getCSV = (token) => {
+ //get a list of files from integrify for the request using the REST API
+    //files/instancelist/:instance_sid
+
+const getFiles = (token) => {
   
   var requestOptions = {
     method: 'GET',
     headers: {
-      'Authorization': 'Bearer 9daa495ba65f4d358ec1fcf7d503d8bd'
+      'Authorization': 'Bearer <token>'
     },
     redirect: 'follow'
   };
@@ -44,11 +65,19 @@ const getCSV = (token) => {
   fetch(url, requestOptions)
     .then(response => response.text())
     .then(result => console.log(result))
+    .then((result) => {
+      return 
+    })
     .catch(error => console.log('error', error));
 } 
 
-getCSV();
+getFiles();
 
+//Parse the Stream Endpoint out of the response
+// const integrifyFile = results
+// const intefridyFileUrl = integrifyFile.StreamEndpoint;
+
+//Take file from Stream Endpoint and Convert to JSON and maps to fit JSON body format
 
 const convertCSV = () => {
     // use npm package to convert csv import file to a JSON format
@@ -58,22 +87,33 @@ const convertCSV = () => {
         console.log(json);
     })
 }
-// convertCSV()
 
-const addNewUsers = () => {
-    // for loop to create new users for all usernames in the new users array
-    // calls integrify api /users endpoint and returns SID
-    // on failure returns error message 
-    const body = { a: 1 };
- 
-fetch('https://httpbin.org/post', {
-        method: 'POST',
-        body:    JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-    })
-    .then(res => res.json())
-    .then(json => console.log(json));
-}
+// convertCSV()
+//Returns JSON format and assigns to a body variable 
+// Array of User Objects 
+
+const importUsers = (usersDetails) => {
+
+var raw = JSON.stringify({"AddressLine1":"","AddressLine2":"","City":"","CostCenter":"","Country":"","Custom1":"","Custom2":"","Department":"","Division":"","Email":"tester@integrify.com","Locale":"en-US","Location":"","ManagerSID":"","NameFirst":"Import","NameLast":"Test","NameMiddle":"","NetworkID":"","Password":"test123","PasswordConfirm":"test123","Phone":"","Postal":"","State":"","TimeZone":"Pacific Standard Time","Title":"","UserName":"importtest"});
+
+var requestOptions = {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer <token>'
+  },
+  redirect: 'follow',
+  body: raw
+};
+
+fetch("https://services7.integrify.com/users/", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('Error importing users', error));
+
+};
+
+importUsers();
+
 
 // Get list of
 const getExistingingUsers = (token) => {
@@ -103,7 +143,5 @@ const compareJSON = () => {
   //add existing users to another array (username exists already)
 }
 
-
-// let myLambda = new IntegrifyLambda(config)
-
-// exports.handler = myLambda.handler
+let myLambda = new integrifyLambda(config)
+exports.handler = myLambda.handler
