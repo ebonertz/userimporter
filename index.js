@@ -13,15 +13,16 @@ var buffStream = require("vinyl-source-buffer")
 console.log(creds)
 
 //create a new Integrfiy AWS Lambda object passing in a configuration object with inputs, outputs and your execute function
-// var config = {
-//   helpUrl: "http://www.integrify.com",
-//   inputs: [
-//       {key:"requestSid", type:"string"},
-//       {key:"file", type:"file"},
-//       {key:"username", type:"string"},
-//       {key:"password", type:"string"},
-//   outputs:[{key:"successMessage", type:"string"}]
-// }
+var config = {
+  helpUrl: "http://www.integrify.com",
+  inputs: [
+      {key:"requestSid", type:"string"},
+      {key:"file", type:"file"},
+      {key:"username", type:"string"},
+      {key:"email", type:"string"},
+      {key:"password", type:"string"}],
+  outputs:[{key:"successMessage", type:"string"}]
+}
 
 
 //Obtain Access Token with Impresonate
@@ -64,6 +65,9 @@ const getFiles = (token) => {
   fetch(url, requestOptions)
     .then(response => response.text())
     .then(result => console.log(result))
+    .then((result) => {
+      return 
+    })
     .catch(error => console.log('error', error));
 } 
 
@@ -88,20 +92,28 @@ const convertCSV = () => {
 //Returns JSON format and assigns to a body variable 
 // Array of User Objects 
 
-const addNewUsers = () => {
-    // for loop to create new users for all usernames in the new users array
-    // calls integrify api /users endpoint and returns SID
-    // on failure returns error message 
-    const body = { a: 1 };
- 
-fetch('https://httpbin.org/post', {
-        method: 'POST',
-        body:    JSON.stringify(body),
-        headers: { 'Content-Type': 'application/json' },
-    })
-    .then(res => res.json())
-    .then(json => console.log(json));
-}
+const importUsers = (usersDetails) => {
+
+var raw = JSON.stringify({"AddressLine1":"","AddressLine2":"","City":"","CostCenter":"","Country":"","Custom1":"","Custom2":"","Department":"","Division":"","Email":"tester@integrify.com","Locale":"en-US","Location":"","ManagerSID":"","NameFirst":"Import","NameLast":"Test","NameMiddle":"","NetworkID":"","Password":"test123","PasswordConfirm":"test123","Phone":"","Postal":"","State":"","TimeZone":"Pacific Standard Time","Title":"","UserName":"importtest"});
+
+var requestOptions = {
+  method: 'POST',
+  headers: {
+    'Authorization': 'Bearer <token>'
+  },
+  redirect: 'follow',
+  body: raw
+};
+
+fetch("https://services7.integrify.com/users/", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('Error importing users', error));
+
+};
+
+importUsers();
+
 
 // Get list of
 const getExistingingUsers = (token) => {
@@ -131,7 +143,5 @@ const compareJSON = () => {
   //add existing users to another array (username exists already)
 }
 
-
-// let myLambda = new IntegrifyLambda(config)
-
-// exports.handler = myLambda.handler
+let myLambda = new integrifyLambda(config)
+exports.handler = myLambda.handler
