@@ -10,8 +10,6 @@ var map = require('map-stream')
 var vfs = require('vinyl-fs');
 var buffStream = require("vinyl-source-buffer")
 
-console.log(creds)
-
 //create a new Integrfiy AWS Lambda object passing in a configuration object with inputs, outputs and your execute function
 var config = {
   helpUrl: "http://www.integrify.com",
@@ -23,7 +21,6 @@ var config = {
       {key:"password", type:"string"}],
   outputs:[{key:"successMessage", type:"string"}]
 }
-
 
 //Obtain Access Token with Impresonate
 const getAccessToken = () => {
@@ -43,9 +40,9 @@ const getAccessToken = () => {
     
 }
 
-getAccessToken()
+// getAccessToken()
 
-const token = " "
+const token = "867086fa4ffe4182ad479256ac59d8c3"
 
 
  //get a list of files from integrify for the request using the REST API
@@ -123,7 +120,7 @@ const getExistingingUsers = (token) => {
   var requestOptions = {
     method: 'GET',
     headers: {
-      'Authorization': 'Bearer {{token}}'
+      'Authorization': 'Bearer <token>'
     },
     redirect: 'follow'
   };
@@ -142,6 +139,7 @@ const compareJSON = () => {
   //add new users to one array (user name does not already exists)
   //add existing users to another array (username exists already)
 }
+
 
 let myLambda = new integrifyLambda(config)
 exports.handler = myLambda.handler
